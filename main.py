@@ -6,11 +6,13 @@ from pprint import pprint
 
 
 main_page = "https://habr.com/ru/articles/top/daily"
+habr_preambule = "https://habr.com"
 
 @dataclass
 class ArticlesData:
     title: str
     views: str
+    link: str
 
 
 def get_url_html(url: str) -> str:
@@ -34,9 +36,12 @@ def get_all_habr_posts(soup: BeautifulSoup) -> list[ArticlesData]:
         print(f"{article_title=}")  
         article_views = article_soup.find("span", class_="tm-icon-counter__value").text
         print(f"{article_views= }")
+        article_link: str = article_soup.find("a", class_="tm-title__link").attrs['href']
+        print(f"{article_link=}")
         posts_data.append(ArticlesData(
             title=article_title,
             views=article_views,
+            link=habr_preambule + article_link,
         ))
     return posts_data
  
