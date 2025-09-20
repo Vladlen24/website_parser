@@ -13,6 +13,7 @@ class ArticlesData:
     title: str
     views: str
     link: str
+    art_text: str
 
 
 def get_url_html(url: str) -> str:
@@ -28,6 +29,17 @@ def get_url_html(url: str) -> str:
 def get_soup(html_text: str) -> BeautifulSoup:
     return BeautifulSoup(html_text, "lxml")
 
+
+def get_article_text(article_url: str):
+    html = get_url_html(article_url)
+    article_soup = get_soup(html)
+    text_soup = article_soup.find("div", class_="article-formatted-body article-formatted-body article-formatted-body_version-2")
+    # paragraphs = text_soup.find_all("p")
+    # art_text = "\n".join([paragraph.text for paragraph in paragraphs])
+    # return art_text
+    return text_soup.text
+
+
 def get_all_habr_posts(soup: BeautifulSoup) -> list[ArticlesData]:
     posts_data = []
     all_articles_soup = soup.find_all("article", class_="tm-articles-list__item")
@@ -37,11 +49,15 @@ def get_all_habr_posts(soup: BeautifulSoup) -> list[ArticlesData]:
         article_views = article_soup.find("span", class_="tm-icon-counter__value").text
         print(f"{article_views= }")
         article_link: str = article_soup.find("a", class_="tm-title__link").attrs['href']
+        article_link = habr_preambule + article_link
         print(f"{article_link=}")
+        article_text = get_article_text(article_link)
+        print(article_text)
         posts_data.append(ArticlesData(
             title=article_title,
             views=article_views,
-            link=habr_preambule + article_link,
+            link=article_link,
+            art_text=article_text,
         ))
     return posts_data
  
